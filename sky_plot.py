@@ -143,6 +143,6 @@ for b in (-60,-30,30,60):
 
 #plt.tight_layout()
 if '--save' in sys.argv:
-    fname = 'example/sdss_example2.png'
+    fname = 'example/sdss_example1.png'
     plt.savefig(fname,bbox_inches='tight', pad_inches=0)
 plt.show()

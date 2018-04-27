@@ -34,6 +34,10 @@ One of the two options above must be specified.
 
 ## Examples
 
+Single patch (one list specified) with transparency:
+
 ![SDSS example 1](example/sdss_example1.png)
+
+Multiple patches (8 lists specified) with no transparency:
 
 ![SDSS example 2](example/sdss_example1.png)
