@@ -40,4 +40,4 @@ Single patch (one list specified) with transparency:
 
 Multiple patches (8 lists specified) with no transparency:
 
-![SDSS example 2](example/sdss_example1.png)
+![SDSS example 2](example/sdss_example2.png)
