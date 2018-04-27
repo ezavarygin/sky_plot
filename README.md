@@ -22,15 +22,17 @@ The software was written to work with `python 3`.
 
 #### Options:
 
---gal - coordinates in file_with_coordinates.txt are l and b galactic coordinates. 
+--gal - coordinates in the files are l and b galactic coordinates. 
 
---eq  - coordinates in file_with_coordinates.txt are RA and DEC equatorial coordinates.
+--eq  - coordinates in the files are RA and DEC equatorial coordinates.
 
 One of the two options above must be specified.
 
---transp - Add transparency to points to mimic density map.
+--transp - Add transparency to points to mimic a density map.
 
 --ham - Use [Hammer](https://matplotlib.org/basemap/users/hammer.html) projection. Otherwise, [Mollweide](https://matplotlib.org/basemap/users/moll.html) projection is used.
+
+--save - Save figure in a file.
 
 ## Examples
 
