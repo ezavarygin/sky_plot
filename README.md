@@ -18,7 +18,7 @@ The software was written to work with `python 3`.
 
 ## Usage
 
-`python sky_plot.py file_with_coordinates.txt [--option]`
+`python sky_plot.py list_of_files_with_coordinates [--option]`
 
 #### Options:
 
@@ -28,4 +28,12 @@ The software was written to work with `python 3`.
 
 One of the two options above must be specified.
 
+--transp - Add transparency to points to mimic density map.
+
 --ham - Use [Hammer](https://matplotlib.org/basemap/users/hammer.html) projection. Otherwise, [Mollweide](https://matplotlib.org/basemap/users/moll.html) projection is used.
+
+## Examples
+
+![SDSS example 1](example/sdss_example1.png)
+
+![SDSS example 2](example/sdss_example1.png)

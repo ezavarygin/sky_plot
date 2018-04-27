@@ -4,10 +4,17 @@ import numpy as np
 from astropy.coordinates import SkyCoord
 import sys
 
+"""
+Options: --gal, --eq, --ham, --transp
+"""
 
-file_name = sys.argv[1]
-
-# options --gal, --eq, --ham
+param_list = sys.argv[1:]
+file_names = []
+for item in param_list:
+    if item not in ['--eq','--gal','--ham']:
+        file_names.append(item)
+    else:
+        break
 
 projection_list = ['hammer', 'moll']
 if '--ham' in sys.argv:
@@ -16,7 +23,10 @@ else:
     projection = projection_list[1]
 
 p_size  = 2 # default rcParams['lines.markersize'] ** 2 which is 36
-p_alpha = 1 #0.02 # transparency of the point to mimic a density map
+if '--transp' in sys.argv:
+    p_alpha = 0.013 # transparency of the point to mimic a density map
+else:
+    p_alpha = 1.0
 
 # Coordinates
 # -----------
@@ -29,17 +39,23 @@ alpha_c = '#4daf4a'
 
 dipoles =  {'CMB': [cmb_l,cmb_b,cmb_c], 'Alpha': [alpha_l,alpha_b,alpha_c]}
 
-if '--eq' in sys.argv: # coordinates in file_name are (RA,DEC)
-    ra_list, dec_list = np.loadtxt(file_name,unpack=True)
-    gal_coord = SkyCoord(ra_list,dec_list,frame='fk5',unit='deg').galactic
-    l_list = gal_coord.l.deg # longitude
-    b_list = gal_coord.b.deg # latitude
-elif '--gal' in sys.argv: # coordinates in file_name are (l,b)
-    l_list, b_list = np.loadtxt(file_name,unpack=True)
-    eq_coord = SkyCoord(l_list,b_list,frame='galactic',unit='deg').fk5
-    ra_list  = eq_coord.ra.deg
-    dec_list  = eq_coord.dec.deg
-
+ra_patches, dec_patches, l_patches, b_patches = [], [], [], []
+for file_name in file_names:
+    if '--eq' in sys.argv: # coordinates in file_name are (RA,DEC)
+        ra_list, dec_list = np.loadtxt(file_name,unpack=True)
+        gal_coord = SkyCoord(ra_list,dec_list,frame='fk5',unit='deg').galactic
+        l_list = gal_coord.l.deg # longitude
+        b_list = gal_coord.b.deg # latitude
+    elif '--gal' in sys.argv: # coordinates in file_name are (l,b)
+        l_list, b_list = np.loadtxt(file_name,unpack=True)
+        eq_coord = SkyCoord(l_list,b_list,frame='galactic',unit='deg').fk5
+        ra_list  = eq_coord.ra.deg
+        dec_list  = eq_coord.dec.deg
+    ra_patches.append(ra_list)
+    dec_patches.append(dec_list)
+    l_patches.append(l_list)
+    b_patches.append(b_list)
+    
 
 fig = plt.figure(figsize=(18,10))
 
@@ -48,8 +64,11 @@ m = Basemap(projection=projection,lat_0=0,lon_0=0) #180)
 m.drawparallels(np.arange(-90,90,30))
 m.drawmeridians(np.arange(-180,180,60)) #(0,360,30))
 ax1.set_title('Equatorial coordinates (RA, DEC) in degrees',y=1.08)
-x, y = m(ra_list,dec_list)
-m.scatter(x,y,s=p_size,marker='o',color='#377eb8',alpha=p_alpha)
+for i in range(len(file_names)):
+    #x, y = m(ra_list,dec_list)
+    #m.scatter(x,y,s=p_size,marker='o',color='#377eb8',alpha=p_alpha)
+    x, y = m(ra_patches[i],dec_patches[i])
+    m.scatter(x,y,s=p_size,marker='o',alpha=p_alpha)#,color='#377eb8')
 # Markers:
 gal_centre = SkyCoord(0.0,0.0,frame='galactic',unit='deg').fk5
 gc_ra  = gal_centre.ra.degree
@@ -74,14 +93,17 @@ m = Basemap(projection=projection,lat_0=0,lon_0=0) #180)
 m.drawparallels(np.arange(-90,90,30))
 m.drawmeridians(np.arange(-180,180,60)) #(0,360,30))
 ax2.set_title('Galactic coordinates (l, b) in degrees',y=1.08)
-x, y = m(l_list,b_list)
-m.scatter(x,y,s=p_size,marker='o',color='#377eb8',alpha=p_alpha)
+for i in range(len(file_names)):
+    #x, y = m(l_list,b_list)
+    #m.scatter(x,y,s=p_size,marker='o',color='#377eb8',alpha=p_alpha)
+    x, y = m(l_patches[i],b_patches[i])
+    m.scatter(x,y,s=p_size,marker='o',alpha=p_alpha)#,color='#377eb8')
 # Markers:
 x, y = m(0.0,0.0)
 m.scatter(x,y,s=50,marker='o',color='k') # Galactic centre
 x, y = m(3.0,-1.0)
 ax2.text(x,y,'Gal Centre',color='black',fontsize=10,va='top',ha='left')
-for key	in dipoles.keys():
+for key in dipoles.keys():
     x, y = m(dipoles[key][0],dipoles[key][1]) # direction
     m.scatter(x,y,s=50,marker='x',color=dipoles[key][2],lw=2.5)
     ax2.text(x,y,'{}'.format(key),color='black',fontsize=10,va='top',ha='right')
@@ -120,4 +142,7 @@ for b in (-60,-30,30,60):
         ax2.text(x,y,r"$%d^{\circ}$"%l,color='black',fontsize=8,va='bottom',ha='left')
 
 #plt.tight_layout()
+if '--save' in sys.argv:
+    fname = 'example/sdss_example2.png'
+    plt.savefig(fname,bbox_inches='tight', pad_inches=0)
 plt.show()
